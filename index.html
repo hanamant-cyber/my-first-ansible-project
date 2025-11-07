@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Food Delivery App</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">🍔 Food<span>Delivery</span></div>
+    <nav>
+      <ul>
+        <li><a href="#home">Home</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#about">About</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- HERO -->
+  <section id="home" class="hero">
+    <div class="hero-text">
+      <h1>Delicious food delivered <span>to your doorstep!</span></h1>
+      <p>Fresh ingredients, fast delivery, and the best taste in town!</p>
+      <button onclick="scrollToSection('menu')">Order Now</button>
+    </div>
+  </section>
+
+  <!-- MENU -->
+  <section id="menu" class="menu">
+    <h2>🍕 Our Menu</h2>
+    <div class="menu-grid">
+      <div class="card">
+        <img src="https://via.placeholder.com/200" alt="Pizza">
+        <h3>Cheese Pizza</h3>
+        <p>Classic cheese with fresh mozzarella and tomato sauce.</p>
+        <button>Order ₹299</button>
+      </div>
+      <div class="card">
+        <img src="https://via.placeholder.com/200" alt="Burger">
+        <h3>Veg Burger</h3>
+        <p>Loaded with veggies and special sauce, served with fries.</p>
+        <button>Order ₹199</button>
+      </div>
+      <div class="card">
+        <img src="https://via.placeholder.com/200" alt="Pasta">
+        <h3>Italian Pasta</h3>
+        <p>Creamy white sauce pasta with exotic vegetables.</p>
+        <button>Order ₹249</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about" class="about">
+    <h2>About Us</h2>
+    <p>We are passionate about serving fresh and delicious food with love. Our chefs use only the best ingredients to make sure every bite counts.</p>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <h2>Contact Us</h2>
+    <form id="contactForm">
+      <input type="text" placeholder="Your Name" required />
+      <input type="email" placeholder="Your Email" required />
+      <textarea placeholder="Your Message" required></textarea>
+      <button type="submit">Send Message</button>
+    </form>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <p>© 2025 Food Delivery App | Made with ❤️ by Hanamant</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+
