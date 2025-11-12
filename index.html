@@ -1,83 +1,286 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Food Delivery App</title>
-  <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Digital Payment Demo</title>
+  <!-- Tailwind via CDN (for demo only) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* small helper to mask card number display */
+    .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Segoe UI Mono', monospace; }
+  </style>
 </head>
-<body>
-  <!-- HEADER -->
-  <header>
-    <div class="logo">🍔 Food<span>Delivery</span></div>
-    <nav>
-      <ul>
-        <li><a href="#home">Home</a></li>
-        <li><a href="#menu">Menu</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
-      </ul>
-    </nav>
-  </header>
+<body class="bg-slate-50 min-h-screen flex items-center justify-center p-4">
+  <main class="w-full max-w-4xl bg-white rounded-2xl shadow-lg p-6 md:p-10">
+    <h1 class="text-2xl md:text-3xl font-semibold mb-4">Digital Payment — Demo</h1>
 
-  <!-- HERO -->
-  <section id="home" class="hero">
-    <div class="hero-text">
-      <h1>Delicious food delivered <span>to your doorstep!</span></h1>
-      <p>Fresh ingredients, fast delivery, and the best taste in town!</p>
-      <button onclick="scrollToSection('menu')">Order Now</button>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Payment form -->
+      <section class="p-4 border rounded-lg bg-white">
+        <h2 class="font-medium mb-3">Make a Payment</h2>
+
+        <form id="payForm" class="space-y-3">
+          <label class="block">
+            <span class="text-sm">Recipient</span>
+            <input id="recipient" type="text" placeholder="e.g. Alice" class="mt-1 block w-full rounded-md border px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400" required />
+          </label>
+
+          <label class="block">
+            <span class="text-sm">Amount (INR)</span>
+            <input id="amount" type="number" min="1" step="0.01" placeholder="100.00" class="mt-1 block w-full rounded-md border px-3 py-2" required />
+          </label>
+
+          <label class="block">
+            <span class="text-sm">Card number</span>
+            <input id="cardNumber" type="text" inputmode="numeric" maxlength="19" placeholder="4242 4242 4242 4242" class="mt-1 block w-full rounded-md border px-3 py-2 mono" required />
+          </label>
+
+          <div class="flex gap-2">
+            <label class="flex-1">
+              <span class="text-sm">Expiry (MM/YY)</span>
+              <input id="expiry" type="text" maxlength="5" placeholder="12/34" class="mt-1 block w-full rounded-md border px-3 py-2" required />
+            </label>
+            <label class="w-32">
+              <span class="text-sm">CVV</span>
+              <input id="cvv" type="password" maxlength="4" placeholder="123" inputmode="numeric" class="mt-1 block w-full rounded-md border px-3 py-2" required />
+            </label>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <input id="save" type="checkbox" class="h-4 w-4" />
+            <label for="save" class="text-sm">Save card (local only)</label>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <button type="submit" class="inline-flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">Pay</button>
+            <button id="clearBtn" type="button" class="px-3 py-2 border rounded-md">Clear</button>
+            <button id="exportBtn" type="button" class="ml-auto px-3 py-2 bg-emerald-600 text-white rounded-md">Export History</button>
+          </div>
+
+          <p id="note" class="text-xs text-slate-500 mt-2">Demo only — no real payment is processed. Do not enter real card details you don't want stored locally.</p>
+        </form>
+      </section>
+
+      <!-- Preview / History -->
+      <aside class="p-4 border rounded-lg bg-slate-50">
+        <h2 class="font-medium mb-3">Preview & History</h2>
+
+        <div class="mb-4">
+          <div class="rounded-lg border bg-white p-3">
+            <div class="flex justify-between items-center mb-2">
+              <div>
+                <div class="text-sm text-slate-500">To</div>
+                <div id="previewRecipient" class="font-medium">—</div>
+              </div>
+              <div class="text-right">
+                <div class="text-sm text-slate-500">Amount</div>
+                <div id="previewAmount" class="font-medium">₹0.00</div>
+              </div>
+            </div>
+
+            <div class="border rounded-md p-3 bg-slate-100">
+              <div class="text-xs text-slate-500">Card</div>
+              <div id="previewCard" class="mono font-medium">•••• •••• •••• ••••</div>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium mb-2">Transactions</h3>
+          <ul id="history" class="space-y-2 max-h-64 overflow-auto"></ul>
+        </div>
+      </aside>
     </div>
-  </section>
 
-  <!-- MENU -->
-  <section id="menu" class="menu">
-    <h2>🍕 Our Menu</h2>
-    <div class="menu-grid">
-      <div class="card">
-        <img src="https://via.placeholder.com/200" alt="Pizza">
-        <h3>Cheese Pizza</h3>
-        <p>Classic cheese with fresh mozzarella and tomato sauce.</p>
-        <button>Order ₹299</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/200" alt="Burger">
-        <h3>Veg Burger</h3>
-        <p>Loaded with veggies and special sauce, served with fries.</p>
-        <button>Order ₹199</button>
-      </div>
-      <div class="card">
-        <img src="https://via.placeholder.com/200" alt="Pasta">
-        <h3>Italian Pasta</h3>
-        <p>Creamy white sauce pasta with exotic vegetables.</p>
-        <button>Order ₹249</button>
-      </div>
-    </div>
-  </section>
+    <footer class="mt-6 text-xs text-slate-500">Built with HTML, Tailwind CSS & vanilla JavaScript — demo only.</footer>
+  </main>
 
-  <!-- ABOUT -->
-  <section id="about" class="about">
-    <h2>About Us</h2>
-    <p>We are passionate about serving fresh and delicious food with love. Our chefs use only the best ingredients to make sure every bite counts.</p>
-  </section>
+  <script>
+    // Utility: format currency
+    function fmt(amount){
+      const a = Number(amount) || 0;
+      return '₹' + a.toFixed(2);
+    }
 
-  <!-- CONTACT -->
-  <section id="contact" class="contact">
-    <h2>Contact Us</h2>
-    <form id="contactForm">
-      <input type="text" placeholder="Your Name" required />
-      <input type="email" placeholder="Your Email" required />
-      <textarea placeholder="Your Message" required></textarea>
-      <button type="submit">Send Message</button>
-    </form>
-  </section>
+    // Luhn Algorithm for basic card validation
+    function luhnCheck(num){
+      const digits = num.replace(/\s+/g, '').split('').reverse().map(d => parseInt(d,10));
+      if (digits.some(isNaN)) return false;
+      let sum = 0;
+      for(let i=0;i<digits.length;i++){
+        let d = digits[i];
+        if (i % 2 === 1) {
+          d *= 2;
+          if (d > 9) d -= 9;
+        }
+        sum += d;
+      }
+      return sum % 10 === 0;
+    }
 
-  <!-- FOOTER -->
-  <footer>
-    <p>© 2025 Food Delivery App | Made with ❤️ by Hanamant</p>
-  </footer>
+    // Mask card number for display: show last 4
+    function maskCard(num){
+      const cleaned = (num||'').replace(/\D/g,'');
+      if (!cleaned) return '•••• •••• •••• ••••';
+      const last = cleaned.slice(-4);
+      return '•••• •••• •••• ' + last.padStart(4,'•');
+    }
 
-  <script src="script.js"></script>
+    // Expiry validation MM/YY
+    function validExpiry(value){
+      if (!/^\d{2}\/\d{2}$/.test(value)) return false;
+      const [m, y] = value.split('/').map(s => parseInt(s,10));
+      if (m < 1 || m > 12) return false;
+      const now = new Date();
+      const year = 2000 + y;
+      const lastDay = new Date(year, m, 0); // last day of month
+      return lastDay >= new Date(now.getFullYear(), now.getMonth(), 1);
+    }
+
+    // localStorage-backed transactions
+    const STORAGE_KEY = 'dp_demo_txns_v1';
+    function loadHistory(){
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      }catch(e){ return []; }
+    }
+    function saveHistory(arr){ localStorage.setItem(STORAGE_KEY, JSON.stringify(arr)); }
+
+    // Render history
+    function renderHistory(){
+      const ul = document.getElementById('history');
+      ul.innerHTML = '';
+      const arr = loadHistory().slice().reverse();
+      if (arr.length === 0){ ul.innerHTML = '<li class="text-sm text-slate-500">No transactions yet</li>'; return; }
+      for(const t of arr){
+        const li = document.createElement('li');
+        li.className = 'bg-white border rounded-md p-3 flex justify-between items-start';
+        li.innerHTML = `
+          <div>
+            <div class="text-sm font-medium">${escapeHtml(t.recipient)}</div>
+            <div class="text-xs text-slate-500">${t.date} · ${escapeHtml(t.card)}</div>
+          </div>
+          <div class="text-right">
+            <div class="font-medium">${fmt(t.amount)}</div>
+            <div class="text-xs text-slate-500">${escapeHtml(t.status)}</div>
+          </div>
+        `;
+        ul.appendChild(li);
+      }
+    }
+
+    function escapeHtml(s){ return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+    // wire up inputs to preview
+    const recipientEl = document.getElementById('recipient');
+    const amountEl = document.getElementById('amount');
+    const cardEl = document.getElementById('cardNumber');
+    const expiryEl = document.getElementById('expiry');
+
+    function updatePreview(){
+      document.getElementById('previewRecipient').textContent = recipientEl.value || '—';
+      document.getElementById('previewAmount').textContent = fmt(amountEl.value || 0);
+      document.getElementById('previewCard').textContent = maskCard(cardEl.value);
+    }
+    [recipientEl, amountEl, cardEl, expiryEl].forEach(el => el.addEventListener('input', updatePreview));
+
+    // format card input as user types
+    cardEl.addEventListener('input', (e) =>{
+      const v = e.target.value.replace(/\D/g,'').slice(0,16);
+      const parts = [];
+      for(let i=0;i<v.length;i+=4) parts.push(v.slice(i,i+4));
+      e.target.value = parts.join(' ');
+      updatePreview();
+    });
+
+    // expiry auto slash
+    expiryEl.addEventListener('input', (e)=>{
+      let v = e.target.value.replace(/\D/g,'').slice(0,4);
+      if (v.length > 2) v = v.slice(0,2) + '/' + v.slice(2);
+      e.target.value = v;
+    });
+
+    // form submit
+    document.getElementById('payForm').addEventListener('submit', function(ev){
+      ev.preventDefault();
+      const recipient = recipientEl.value.trim();
+      const amount = parseFloat(amountEl.value);
+      const card = cardEl.value.replace(/\s+/g,'');
+      const expiry = expiryEl.value.trim();
+      const cvv = document.getElementById('cvv').value.trim();
+      const save = document.getElementById('save').checked;
+
+      // basic validations
+      if (!recipient) return alert('Enter recipient');
+      if (!amount || amount <= 0) return alert('Enter a valid amount');
+      if (!/^[0-9]{12,19}$/.test(card)) return alert('Enter a valid card number');
+      if (!luhnCheck(card)) return alert('Card failed basic validation');
+      if (!validExpiry(expiry)) return alert('Enter a valid expiry (MM/YY)');
+      if (!/^[0-9]{3,4}$/.test(cvv)) return alert('Enter a valid CVV');
+
+      // Simulate processing (demo only)
+      const tx = {
+        id: 'tx_' + Date.now(),
+        recipient, amount: Number(amount), card: '****' + card.slice(-4), expiry, date: new Date().toLocaleString(), status: 'Processing'
+      };
+      const hist = loadHistory();
+      hist.push(tx);
+      saveHistory(hist);
+      renderHistory();
+
+      // fake async processing (UI effect only)
+      const processBtn = ev.submitter || ev.target.querySelector('button[type=submit]');
+      const originalText = processBtn.textContent;
+      processBtn.disabled = true;
+      processBtn.textContent = 'Processing...';
+
+      setTimeout(()=>{
+        // random success/fail for demo
+        const success = Math.random() > 0.08; // 92% success
+        tx.status = success ? 'Success' : 'Failed';
+        saveHistory(hist);
+        renderHistory();
+        processBtn.disabled = false;
+        processBtn.textContent = originalText;
+        if (success) {
+          alert('Payment simulated: ' + fmt(amount) + ' → ' + recipient);
+        } else {
+          alert('Payment failed (simulated). Try again.');
+        }
+
+        // optionally save card locally
+        if (save) {
+          const cards = JSON.parse(localStorage.getItem('dp_demo_cards_v1') || '[]');
+          cards.push({id: 'c_' + Date.now(), last4: card.slice(-4), brand: 'Card', savedAt: new Date().toLocaleString()});
+          localStorage.setItem('dp_demo_cards_v1', JSON.stringify(cards));
+        }
+
+      }, 900);
+
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', ()=>{
+      document.getElementById('payForm').reset();
+      updatePreview();
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', ()=>{
+      const data = localStorage.getItem(STORAGE_KEY) || '[]';
+      const blob = new Blob([data], {type: 'application/json'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'transactions.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    });
+
+    // initial render
+    renderHistory();
+    updatePreview();
+  </script>
 </body>
 </html>
 
